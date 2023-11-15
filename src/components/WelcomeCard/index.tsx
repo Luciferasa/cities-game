@@ -6,13 +6,13 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ handleChatMode }) => {
   return (
     <>
       <div>
-        <h2 className="text-base font-semibold mb-2">Игра в города на время</h2>
+        <h2 className="text-base font-semibold text-center mt-4 prose">Игра в города на время</h2>
       </div>
       <hr className="my-4 border-t border-gray-300" />
-      <div>
+      <div className="p-4 prose">
         <p>Цель: Назвать как можно больше реальных городов.</p>
         <div className="max-w-md mx-auto">
-          <ul className="list-disc space-y-2">
+          <ul className="list-disc space-y-2 mb-0">
             <li>Запрещается повторение городов.</li>
             <li>
               Названий городов на твердый "ъ" и мягкий "ь" знак нет. Из-за этого
@@ -26,7 +26,7 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ handleChatMode }) => {
           </ul>
         </div>
       </div>
-      <button className="bg-indigo-400" onClick={() => handleChatMode()}>Начать игру</button>
+      <button className="block bg-violet-600 rounded text-white p-2 my-8 mt-0 mx-auto" onClick={() => handleChatMode()}>Начать игру</button>
     </>
   );
 };

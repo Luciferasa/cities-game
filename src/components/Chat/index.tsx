@@ -1,4 +1,4 @@
-import {FormEventHandler, useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Message } from "../../App";
 
 type ChatProps = {
@@ -52,67 +52,72 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGa
       return "Напишите любой город, например: Где вы живете?";
     } else {
       const city = messages[messages.length - 1].message;
-      let letter = city[city.length - 1] === 'ъ' || city[city.length - 1] === 'ь' ? city[city.length - 2] : city[city.length - 1];
+      let letter = city[city.length - 1] === 'ъ' || city[city.length - 1] === 'ь' || city[city.length - 1] === 'ы'
+        ? city[city.length - 2] : city[city.length - 1];
       return `Знаете город на букву "${letter.toUpperCase()}"?`
     }
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <div className="border rounded-lg overflow-hidden">
-        <div className="bg-gray-800 text-white p-4">
-          <h2 className="text-xl font-bold">
-            {isPlayer ? 'Сейчас ваша очередь' : 'Сейчас очередь соперника'}
-            {formatTime(timeRemaining)}
-          </h2>
-        </div>
+    <div className="w-full flex flex-col h-full">
+      <div className="flex justify-between p-4 items-center">
+        <h2 className="">
+          {isPlayer ? 'Сейчас ваша очередь' : 'Сейчас очередь соперника'}
+        </h2>
+        <strong className="text-base font-semibold text-center">{formatTime(timeRemaining)}</strong>
+      </div>
+      <hr className="border-t border-gray-300" />
 
-        <div className="p-4">
-          {messages.map((message) => (
+      <div className={"p-4 overflow-y-auto flex-auto " + (messages.length === 0 && "flex items-center justify-center")}>
+        {messages.length === 0 && <span className="text-gray-400">Первый участник вспоминает города...</span>}
+        {messages.map((message) => (
+          <div
+            className={`flex items-center mb-2 ${
+              message.isPlayer ? 'justify-end' : ''
+            }`}
+          >
             <div
-              className={`flex items-center mb-2 ${
-                message.isPlayer ? 'justify-end' : ''
+              className={`rounded-lg p-3 bg-${
+                message.isPlayer  ? 'violet-600 text-white rounded-br-none' : 'gray-100 rounded-bl-none'
               }`}
             >
-              <div
-                className={`bg-${
-                  message.isPlayer ? 'green' : 'blue'
-                }-500 rounded-full p-2 h-8 w-8 flex items-center justify-center ${
-                  message.isPlayer ? 'ml-2' : 'mr-2'
-                }`}
-              >
-              </div>
-              <div
-                className={`bg-${
-                  message.isPlayer  ? 'blue' : 'gray'
-                }-100 p-3 rounded-lg`}
-              >
-                <p className="text-gray-800">{message?.message}</p>
-              </div>
+              {message?.message}
             </div>
-          ))}
-        </div>
-
-        <div>Всего перечислено городов: {messages.length}</div>
-        <div className="bg-gray-100 p-4 flex">
-          <form onSubmit={(e) => {
-            handleMessage(newMessage);
-            setNewMessage('');
-            e.preventDefault();
-          }}>
-            <input
-              type="text"
-              placeholder={getPlaceholderText()}
-              className="flex-grow border rounded-full p-2 focus:outline-none"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-            />
-            <button className="bg-blue-500 text-white rounded-full p-2 ml-2" type="submit">
-              Отправить
-            </button>
-          </form>
-        </div>
+          </div>
+        ))}
+        {messages.length !== 0 && <div className="text-center text-gray-400">Всего перечислено городов: {messages.length}</div> }
       </div>
+
+      <form
+        className="p-4"
+        onSubmit={(e) => {
+          handleMessage(newMessage);
+          setNewMessage('');
+          e.preventDefault();
+        }}>
+        <div className="bg-gray-100 p-2 rounded-lg flex">
+          <input
+            type="text"
+            placeholder={getPlaceholderText()}
+            className="flex-grow border bg-transparent color-black border-0 px-2 focus:outline-none"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button className="bg-violet-600 text-white rounded-lg p-2 ml-2" type="submit">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_7618_580)">
+                <path d="M8.33337 11.6667L17.5 2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17.5001 2.5L12.0834 17.5C12.0468 17.5798 11.9881 17.6474 11.9143 17.6948C11.8404 17.7422 11.7545 17.7674 11.6667 17.7674C11.579 17.7674 11.493 17.7422 11.4192 17.6948C11.3453 17.6474 11.2866 17.5798 11.2501 17.5L8.33339 11.6667L2.50006 8.75C2.42027 8.71344 2.35266 8.65474 2.30526 8.58088C2.25786 8.50701 2.23267 8.4211 2.23267 8.33333C2.23267 8.24557 2.25786 8.15965 2.30526 8.08579C2.35266 8.01193 2.42027 7.95323 2.50006 7.91667L17.5001 2.5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_7618_580">
+                  <rect width="20" height="20" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

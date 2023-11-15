@@ -42,7 +42,7 @@ function App() {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-md mb-4">
+    <div className="bg-white shadow-md rounded-lg max-w-xl w-5/12 h-0" style={{minHeight: "28rem"}}>
       {mode === Mode.Welcome && <WelcomeCard handleChatMode={handleGameMode} />}
       {mode === Mode.Game && <Game onChangeMode={handleMode} />}
       {mode === Mode.Win && <WinCard citiesCount={citiesCount!} lastCity={lastCity} onChangeMode={handleMode} />}

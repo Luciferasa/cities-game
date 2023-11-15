@@ -29,7 +29,7 @@ const Game: React.FC<GameProps> = ({ onChangeMode }) => {
     let wantedCity = cities.find((item) => city.toLowerCase() === item.toLowerCase().toLowerCase());
     if (city[0]?.toLowerCase() !== lastLetter?.toLowerCase() && usedCities.length) {
       onChangeMode(Mode.GameOver, {
-        messageDetails: `Вы должны были написать город на букву "${lastLetter}"!`,
+        messageDetails: `Вы должны были написать город на букву "${lastLetter.toUpperCase()}"!`,
         citiesCount: messages.length,
         lastCity: messages[messages.length - 1]?.message,
       })
