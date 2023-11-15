@@ -2,6 +2,7 @@ import Chat from "../Chat";
 import { Message, MessageDetails, Mode } from "../../App";
 import { cities } from "../../cities";
 import { useEffect, useState } from "react";
+import { getLastLetter } from "../utils";
 
 type GameProps = {
   onChangeMode: (mode: Mode, details: MessageDetails) => void;
@@ -22,7 +23,7 @@ const Game: React.FC<GameProps> = ({ onChangeMode }) => {
         respondAsComputer();
       }, randomTimeout)
       return () => clearTimeout(timeout);
-    }
+    };
   }, [isPlayer]);
 
   const handleMessage = (city: string) => {
@@ -32,14 +33,14 @@ const Game: React.FC<GameProps> = ({ onChangeMode }) => {
         messageDetails: `Вы должны были написать город на букву "${lastLetter.toUpperCase()}"!`,
         citiesCount: messages.length,
         lastCity: messages[messages.length - 1]?.message,
-      })
+      });
       return;
     } else if (!wantedCity) {
       onChangeMode(Mode.GameOver, {
         messageDetails: 'Такого города не существует!',
         citiesCount: messages.length,
         lastCity: messages[messages.length - 1]?.message,
-      })
+      });
       return;
     } else if (usedCities.includes(wantedCity)) {
       onChangeMode(Mode.GameOver, {
@@ -48,10 +49,8 @@ const Game: React.FC<GameProps> = ({ onChangeMode }) => {
         lastCity: messages[messages.length - 1]?.message,
       })
       return;
-    } else if (wantedCity[wantedCity.length-1] === 'ь' || wantedCity[wantedCity.length-1] === 'ъ' || wantedCity[wantedCity.length-1] === 'ъ') {
-      setLastLetter(wantedCity[wantedCity.length-2]);
     } else {
-      setLastLetter(wantedCity[wantedCity.length-1]);
+      setLastLetter(getLastLetter(wantedCity));
     }
     setUsedCities([wantedCity, ...usedCities]);
     setMessages([...messages, { isPlayer: true, message: wantedCity, key: wantedCity }]);
@@ -59,20 +58,24 @@ const Game: React.FC<GameProps> = ({ onChangeMode }) => {
   };
 
   const respondAsComputer = () => {
+    let suitableCities = [];
     for (let city of cities) {
       if (city[0].toLowerCase() === lastLetter && !usedCities.includes(city)) {
-        if (city[city.length-1] === 'ь' || city[city.length-1] === 'ъ' || city[city.length-1] === 'ы') {
-          setLastLetter(city[city.length-2]);
-        } else {
-          setLastLetter(city[city.length-1]);
-        }
-        setUsedCities([city, ...usedCities]);
-        setMessages([...messages, { isPlayer: false, message: city, key: city }]);
-        setIsPlayer(true);
-        return;
+        suitableCities.push(city);
       }
     }
-    onChangeMode(Mode.Win, { citiesCount: messages.length, lastCity: messages[messages.length - 1].message });
+    if (suitableCities.length) {
+      const randomIndex = Math.floor(Math.random() * suitableCities.length);
+      const randomCity = suitableCities[randomIndex];
+
+      setLastLetter(getLastLetter(randomCity));
+
+      setUsedCities([randomCity, ...usedCities]);
+      setMessages([...messages, { isPlayer: false, message: randomCity, key: randomCity }]);
+      setIsPlayer(true);
+    } else {
+      onChangeMode(Mode.Win, { citiesCount: messages.length, lastCity: messages[messages.length - 1].message });
+    }
   };
 
   const onGameOver = (message: string) => {

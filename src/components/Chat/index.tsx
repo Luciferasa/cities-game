@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Message } from "../../App";
+import { getLastLetter } from "../utils";
 
 type ChatProps = {
   handleMessage: (city: string) => void;
@@ -13,6 +14,7 @@ const time = 2 * 60;
 const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGameOver }) => {
   const [newMessage, setNewMessage] = useState<string>('');
   const [timeRemaining, setTimeRemaining] = useState(time);
+  const [timerWidth, setTimerWidth] = useState(100);
 
   useEffect(() => {
     if (messages.length) {
@@ -25,6 +27,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGa
 
     if (timeRemaining > 0) {
       timerId = setInterval(() => {
+        setTimerWidth((prevWidth) => prevWidth - 1);
         setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
       return () => {
@@ -52,8 +55,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGa
       return "Напишите любой город, например: Где вы живете?";
     } else {
       const city = messages[messages.length - 1].message;
-      let letter = city[city.length - 1] === 'ъ' || city[city.length - 1] === 'ь' || city[city.length - 1] === 'ы'
-        ? city[city.length - 2] : city[city.length - 1];
+      const letter = getLastLetter(city);
       return `Знаете город на букву "${letter.toUpperCase()}"?`
     }
   };
@@ -66,7 +68,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGa
         </h2>
         <strong className="text-base font-semibold text-center">{formatTime(timeRemaining)}</strong>
       </div>
-      <hr className="border-t border-gray-300" />
+      <hr className="bg-violet-300 h-1" style={{ width: `${timerWidth}%` }} />
 
       <div className={"p-4 overflow-y-auto flex-auto " + (messages.length === 0 && "flex items-center justify-center")}>
         {messages.length === 0 && <span className="text-gray-400">Первый участник вспоминает города...</span>}
@@ -101,7 +103,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGa
             placeholder={getPlaceholderText()}
             className="flex-grow border bg-transparent color-black border-0 px-2 focus:outline-none"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => setNewMessage(e.target.value.trim())}
           />
           <button className="bg-violet-600 text-white rounded-lg p-2 ml-2" type="submit">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
