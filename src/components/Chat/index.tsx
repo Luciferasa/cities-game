@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import {FormEventHandler, useEffect, useState} from "react";
 import { Message } from "../../App";
 
 type ChatProps = {
   handleMessage: (city: string) => void;
   messages: Message[];
   isPlayer: boolean;
+  handleGameOver: (message: string) => void;
 };
 
-const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer }) => {
+const time = 2 * 60;
+
+const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer, handleGameOver }) => {
   const [newMessage, setNewMessage] = useState<string>('');
-  const [timeRemaining, setTimeRemaining] = useState(120);
+  const [timeRemaining, setTimeRemaining] = useState(time);
 
   useEffect(() => {
     if (messages.length) {
@@ -24,12 +27,13 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer }) => {
       timerId = setInterval(() => {
         setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
+      return () => {
+        clearInterval(timerId);
+      };
+    } else {
+      handleGameOver('К сожалению, твое время вышло!');
     }
-
-    return () => {
-      clearInterval(timerId);
-    };
-  }, [messages.length]);
+  }, [messages.length, timeRemaining]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -38,7 +42,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer }) => {
   };
 
   const resetTimer = () => {
-    setTimeRemaining(120);
+    setTimeRemaining(time);
   };
 
   const getPlaceholderText = () => {
@@ -51,7 +55,7 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer }) => {
       let letter = city[city.length - 1] === 'ъ' || city[city.length - 1] === 'ь' ? city[city.length - 2] : city[city.length - 1];
       return `Знаете город на букву "${letter.toUpperCase()}"?`
     }
-  }
+  };
 
   return (
     <div className="max-w-lg mx-auto p-4">
@@ -91,21 +95,22 @@ const Chat: React.FC<ChatProps> = ({ handleMessage, messages, isPlayer }) => {
 
         <div>Всего перечислено городов: {messages.length}</div>
         <div className="bg-gray-100 p-4 flex">
-          <input
-            type="text"
-            placeholder={getPlaceholderText()}
-            className="flex-grow border rounded-full p-2 focus:outline-none"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-          <button
-            className="bg-blue-500 text-white rounded-full p-2 ml-2"
-            onClick={() => {
-              handleMessage(newMessage);
-              setNewMessage('');
-            }}>
-            Отправить
-          </button>
+          <form onSubmit={(e) => {
+            handleMessage(newMessage);
+            setNewMessage('');
+            e.preventDefault();
+          }}>
+            <input
+              type="text"
+              placeholder={getPlaceholderText()}
+              className="flex-grow border rounded-full p-2 focus:outline-none"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <button className="bg-blue-500 text-white rounded-full p-2 ml-2" type="submit">
+              Отправить
+            </button>
+          </form>
         </div>
       </div>
     </div>

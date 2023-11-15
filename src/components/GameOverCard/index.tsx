@@ -1,18 +1,20 @@
-import { Message } from "../../App";
+import { MessageDetails, Mode } from "../../App";
 
-type LossCard = {
-  messages: Message[];
-  explainingMessage: string;
+type GameOverCard = {
+  citiesCount: number;
+  lastCity: string | undefined;
+  explainingMessage: string | undefined;
+  onChangeMode: (mode: Mode, details: MessageDetails) => void;
 };
 
-const GameOverCard: React.FC<LossCard> = ({ messages, explainingMessage }) => {
+const GameOverCard: React.FC<GameOverCard> = ({ citiesCount, lastCity, explainingMessage, onChangeMode }) => {
   return (
     <>
-      <div>{explainingMessage ? explainingMessage : 'К сожалению, твое время вышло! Твой противник победил!'}</div>
-      <div>Всего было перечислено городов: {messages.length}</div>
+      <div>{explainingMessage ? explainingMessage : 'Твой противник победил!'} Вы проиграли!</div>
+      <div>Всего было перечислено городов: {citiesCount}</div>
       <div>Очень неплохой результат!</div>
-      <div>Последний город, названный победителем: {messages[messages.length - 1]?.message}</div>
-      <button>Начать новую игру</button>
+      <div>{lastCity ? `Последний город, названный победителем: ${lastCity}` : ''}</div>
+      <button onClick={() => onChangeMode(Mode.Game, {})}>Начать новую игру</button>
     </>
   )
 }
