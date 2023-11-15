@@ -1,10 +1,12 @@
-import React from "react";
+type WelcomeCardProps = {
+  handleChatMode: () => void;
+};
 
-const WelcomeCard = () => {
+const WelcomeCard: React.FC<WelcomeCardProps> = ({ handleChatMode }) => {
   return (
-    <div className="bg-white shadow-md rounded-md p-4 mb-4">
-      <div className="mb-4">
-        <h2 className="text-xl font-bold mb-2">Игра в города на время</h2>
+    <>
+      <div>
+        <h2 className="text-base font-semibold mb-2">Игра в города на время</h2>
       </div>
       <hr className="my-4 border-t border-gray-300" />
       <div>
@@ -24,7 +26,8 @@ const WelcomeCard = () => {
           </ul>
         </div>
       </div>
-    </div>
+      <button className="bg-indigo-400" onClick={() => handleChatMode()}>Начать игру</button>
+    </>
   );
 };
 
